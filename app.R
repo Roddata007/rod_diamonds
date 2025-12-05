@@ -4,10 +4,15 @@
 library(shiny)
 library(ggplot2)
 library(dplyr)
+library(bslib)
+library(plotly)
+library(DT)
+
 
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
+  theme = bs_theme(bootswatch = "flatly"),
   
   # Application title
   titlePanel("Exploration des Diamants "),
@@ -25,19 +30,20 @@ ui <- fluidPage(
     
     # Show a plot of the generated distribution
     mainPanel(
-      plotOutput("distPlot")
+      plotlyOutput("distPlot"),
+      DTOutput("table")
     )
   )
 )
 
-# Define server logic required to draw a histogram
+# server 
 server <- function(input, output) {
   
-  output$distPlot <- renderPlot({
+  output$distPlot <- renderPlotly({
     d <- diamonds %>%
       filter(price <= input$prix_max)
     
-    ggplot(diamonds, aes(x = carat, y = price)) +
+    pty<-ggplot(d, aes(x = carat, y = price)) +
       geom_point(alpha = 0.3) +
       labs(
         x = "Carat",
@@ -45,8 +51,8 @@ server <- function(input, output) {
         title = paste("Prix maximum :", input$prix_max)
       ) +
       theme_minimal()
+    ggplotly(pty)
   })
-  
   
 
 }
