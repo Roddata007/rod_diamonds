@@ -3,5 +3,10 @@
 install.packages("usethis")
 library(usethis)
 
-#installation d'autres packages
+#chargement des packages
+library(dplyr)
+library(ggplot2)
+library(bslib)
+
+#Premier morceau de code pour l'application
 
