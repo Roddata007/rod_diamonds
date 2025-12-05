@@ -1,46 +1,58 @@
 #APPLICATION SHINY SUR LE JEU DIAMONDS
 
-install.packages("usethis")
-library(usethis)
-
-#chargement des packages
-library(dplyr)
+#chargement des autres packages
+library(shiny)
 library(ggplot2)
-library(bslib)
+library(dplyr)
 
-#Premier morceau de code pour l'application
-thematic::thematic_shiny(font = "auto")
+
 # Define UI for application that draws a histogram
 ui <- fluidPage(
-  theme = bs_theme(
-    version = 5
-  ),
+  
   # Application title
-  titlePanel("Starwars"),
-  h1("Star Wars Characters"),
+  titlePanel("Exploration des Diamants "),
   # Sidebar with a slider input for number of bins 
   sidebarLayout(
     sidebarPanel(
-      sliderInput(inputId = "taille",
-                  label = "Height of characters",
-                  min = 0,
-                  max = 250,
-                  value = 30),
-      actionButton(inputId = "boutton", label = "Cliquez-moi"),
-      selectInput(
-        inputId = "sexe",
-        label = "Choisissez le genre",
-        choices = c("masculine","feminine")
-      )
+      sliderInput(
+        inputId = "prix_max",
+        label = "Prix maximum :",
+        min = 300,
+        max = 20000,
+        value = 5000)
+      
     ),
+    
     # Show a plot of the generated distribution
     mainPanel(
-      textOutput(outputId = "nbperso"),
-      plotOutput(outputId = "StarWarsPlot"),
-      DT::DTOutput(outputId = "tableau")
+      plotOutput("distPlot")
     )
-    
   )
 )
+
+# Define server logic required to draw a histogram
+server <- function(input, output) {
+  
+  output$distPlot <- renderPlot({
+    d <- diamonds %>%
+      filter(price <= input$prix_max)
+    
+    ggplot(diamonds, aes(x = carat, y = price)) +
+      geom_point(alpha = 0.3) +
+      labs(
+        x = "Carat",
+        y = "Price",
+        title = paste("Prix maximum :", input$prix_max)
+      ) +
+      theme_minimal()
+  })
+  
+  
+
+}
+
+# Run the application 
+shinyApp(ui = ui, server = server)
+
 
 
