@@ -9,7 +9,6 @@ library(plotly)
 library(DT)
 
 
-
 # Define UI for application that draws a histogram
 ui <- fluidPage(
   theme = bs_theme(
@@ -74,7 +73,8 @@ server <- function(input, output) {
   output$distPlot <- renderPlotly({
     d <- diamonds %>%
       filter(price <= input$prix_max,
-             color == input$choix)
+             color == input$choix) %>%
+      select(carat, cut, color, clarity, depth, table, price)
     
     col <- ifelse(input$rose == "Oui", "pink", "steelblue") 
     
@@ -83,7 +83,7 @@ server <- function(input, output) {
       labs(
         x = "Carat",
         y = "Price",
-        title = paste("Prix maximum :", input$prix_max)
+        title = paste("prix:", input$prix_max,"& color:", input$choix)
       ) +
       theme_minimal()
     ggplotly(pty)
@@ -92,7 +92,8 @@ server <- function(input, output) {
   output$table <- renderDT({
     
     d <- diamonds %>%
-      filter(price <= input$prix_max)
+      filter(price <= input$prix_max) %>%
+      select(carat, cut, color, clarity, depth, table, price)
     
     datatable(d)
   })
