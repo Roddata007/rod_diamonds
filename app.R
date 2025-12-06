@@ -63,9 +63,7 @@ server <- function(input, output) {
   observeEvent(
     c(input$rose, input$choix, input$prix_max, input$bouton),
     {
-      showNotification(
-        "Un clic a été fait",
-        type = "message")
+      message("vous avez cliqué sur le bouton")
     }
     )
   
