@@ -7,6 +7,7 @@ library(dplyr)
 library(bslib)
 library(plotly)
 library(DT)
+library(thematic) 
 
 
 # Define UI for application that draws a histogram
@@ -60,23 +61,26 @@ ui <- fluidPage(
 server <- function(input, output) {
   thematic::thematic_shiny(font = "auto")
   
+  rv <- reactiveValues(df = NULL)
+  
   observeEvent(
     c(input$rose, input$choix, input$prix_max, input$bouton),
     {
-      message("vous avez cliqué sur le bouton")
+      message("vous avez fait un clic")
+      
+      rv$df <- diamonds %>%
+        filter(price <= input$prix_max,
+               color == input$choix) %>%
+        select(carat, cut, color, clarity, depth, table, price)
     }
     )
   
   #graphique plotly
   output$distPlot <- renderPlotly({
-    d <- diamonds %>%
-      filter(price <= input$prix_max,
-             color == input$choix) %>%
-      select(carat, cut, color, clarity, depth, table, price)
     
     col <- ifelse(input$rose == "Oui", "pink", "steelblue") 
     
-    pty<-ggplot(d, aes(x = carat, y = price)) +
+    pty<-ggplot(rv$df, aes(x = carat, y = price)) +
       geom_point(color=col,alpha = 0.3) +
       labs(
         x = "Carat",
@@ -89,11 +93,7 @@ server <- function(input, output) {
   # Tableau interactif 
   output$table <- renderDT({
     
-    d <- diamonds %>%
-      filter(price <= input$prix_max) %>%
-      select(carat, cut, color, clarity, depth, table, price)
-    
-    datatable(d)
+    datatable(rv$df)
   })
 
   
