@@ -10,32 +10,30 @@ library(DT)
 library(thematic) 
 
 
-# Define UI for application that draws a histogram
+# Définition de l'UI
 ui <- fluidPage(
   theme = bs_theme(
     version = 5,
     bootswatch = "minty"
   ),
   
-  # Application title
+  # Titre de l'application
+  
   titlePanel("Exploration des Diamants "),
   # Sidebar  
   sidebarLayout(
     sidebarPanel(
-      
       radioButtons(
         inputId = "rose",
         label = "Colorier les points en rose ?",
         choices = c("Oui","Non"),
         selected = "Oui"
       ),
-      
       selectInput(
         inputId = "choix",
         label = "Choisir une couleur à filtrer",
         choices = c("D", "E", "F","G","H","I","J")
       ),
-      
       sliderInput(
         inputId = "prix_max",
         label = "Prix maximum :",
@@ -49,7 +47,7 @@ ui <- fluidPage(
     )
   ),
     
-    # Show a plot of the generated distribution
+    # affichage
     mainPanel(
       plotlyOutput(outputId = "distPlot"),
       DTOutput(outputId = "table")
@@ -78,7 +76,7 @@ server <- function(input, output) {
   #graphique plotly
   output$distPlot <- renderPlotly({
     
-    col <- ifelse(input$rose == "Oui", "pink", "steelblue") 
+    col <- ifelse(input$rose == "Oui", "pink", "black") 
     
     pty<-ggplot(rv$df, aes(x = carat, y = price)) +
       geom_point(color=col,alpha = 0.3) +
