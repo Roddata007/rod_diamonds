@@ -60,6 +60,10 @@ ui <- fluidPage(
 # server 
 server <- function(input, output) {
   thematic::thematic_shiny(font = "auto")
+  
+  observeEvent(c(input$rose, input$choix,input$prix_max,input$bouton), {
+    message("Un clic a été fait")
+  })
   #graphique plotly
   output$distPlot <- renderPlotly({
     d <- diamonds %>%
