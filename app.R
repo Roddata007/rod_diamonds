@@ -61,17 +61,16 @@ server <- function(input, output) {
   
   rv <- reactiveValues(df = NULL)
   
-  observeEvent(
-    c(input$rose, input$choix, input$prix_max, input$bouton),
-    {
-      message("vous avez fait un clic")
-      
+  observeEvent( c(input$rose, input$choix, input$prix_max, input$bouton),{
       rv$df <- diamonds %>%
         filter(price <= input$prix_max,
                color == input$choix) %>%
         select(carat, cut, color, clarity, depth, table, price)
-    }
-    )
+      
+      showNotification(paste("prix:", input$prix_max,"& color:", input$choix),
+                       type="message"
+                       )
+    })
   
   #graphique plotly
   output$distPlot <- renderPlotly({
@@ -81,8 +80,8 @@ server <- function(input, output) {
     pty<-ggplot(rv$df, aes(x = carat, y = price)) +
       geom_point(color=col,alpha = 0.3) +
       labs(
-        x = "Carat",
-        y = "Price",
+        x = "carat",
+        y = "price",
         title = paste("prix:", input$prix_max,"& color:", input$choix)
       ) +
       theme_minimal()
