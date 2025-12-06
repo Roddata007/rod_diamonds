@@ -59,7 +59,7 @@ ui <- fluidPage(
 
 # server 
 server <- function(input, output) {
-  
+  thematic::thematic_shiny(font = "auto")
   #graphique plotly
   output$distPlot <- renderPlotly({
     d <- diamonds %>%
