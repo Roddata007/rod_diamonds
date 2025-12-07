@@ -7,8 +7,7 @@ library(dplyr)
 library(bslib)
 library(plotly)
 library(DT)
-library(thematic) 
-
+thematic::thematic_shiny(font = "auto")
 
 # Définition de l'UI
 ui <- fluidPage(
@@ -57,15 +56,29 @@ ui <- fluidPage(
 
 # server 
 server <- function(input, output) {
-  thematic::thematic_shiny(font = "auto")
-  
+ 
   rv <- reactiveValues(df = NULL)
   
-  observeEvent( c(input$rose, input$choix, input$prix_max, input$bouton),{
+  observeEvent(input$bouton,{
+    
       rv$df <- diamonds %>%
         filter(price <= input$prix_max,
                color == input$choix) %>%
         select(carat, cut, color, clarity, depth, table, price)
+      
+      col <- ifelse(input$rose == "Oui", "pink", "black") 
+      
+      pty <- ggplot(rv$df, aes(x = carat, y = price)) +
+        geom_point(color = col, alpha = 0.3) +
+        labs(
+          x = "carat",
+          y = "price",
+          title = paste("prix:", input$prix_max, "& color:", input$choix)
+        ) +
+        theme_minimal()
+      
+      rv$graph <- ggplotly(pty)
+      rv$table <- datatable(rv$df)
       
       showNotification(paste("prix:", input$prix_max,"& color:", input$choix),
                        type="message"
@@ -74,30 +87,17 @@ server <- function(input, output) {
   
   #graphique plotly
   output$distPlot <- renderPlotly({
-    
-    col <- ifelse(input$rose == "Oui", "pink", "black") 
-    
-    pty<-ggplot(rv$df, aes(x = carat, y = price)) +
-      geom_point(color=col,alpha = 0.3) +
-      labs(
-        x = "carat",
-        y = "price",
-        title = paste("prix:", input$prix_max,"& color:", input$choix)
-      ) +
-      theme_minimal()
-    ggplotly(pty)
+    rv$graph
   })
+  
   # Tableau interactif 
   output$table <- renderDT({
     
-    datatable(rv$df)
+   rv$table
   })
 
-  
 }
-
 # Run the application 
 shinyApp(ui = ui, server = server)
-
 
 
